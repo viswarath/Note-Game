@@ -2,6 +2,30 @@
 import pygame
 from shapes import *
 from random import randrange
+from Cursor import *
+
+def cursor_init():
+    # make a sprite for the hovering "v"
+    # need a surface to set the image of the sprite, and a rect
+
+    # base surface for all animations of the cursor
+    cursor_base = pygame.Surface((20,30))
+    cursor_base.set_colorkey("black")
+
+    cursor_0 = cursor_base.copy()
+    # draw onto new surface
+    pygame.draw.line(cursor_0, "lightsteelblue4", (5,5), (10,20), 4)
+    pygame.draw.line(cursor_0, "lightsteelblue4", (10,20), (15,5), 4)
+
+    cursor_1= cursor_base.copy()
+
+    pygame.draw.line(cursor_1, "lightsteelblue4", (5,10), (10,25), 4)
+    pygame.draw.line(cursor_1, "lightsteelblue4", (10,25), (15,10), 4)
+
+
+    # add this to sprite
+    return Cursor([cursor_0, cursor_1])
+
 
 # pygame setup
 pygame.init()
@@ -9,8 +33,6 @@ screen = pygame.display.set_mode((1280, 720))
 clock = pygame.time.Clock()
 running = True
 dt = 0
-
-# player_pos = pygame.Vector2(screen.get_width() / 2, middle)
 
 # We can draw the staff once
 # draw the staff (stave_line_thickness lines)
@@ -31,30 +53,16 @@ for i in range(len(stave.notes)):
 stave.draw_notes()
 stave.draw_stave(screen, primary_color)
 
-# make a sprite for the hovering "v"
-# need a surface to set the image of the sprite, and a rect
-cursor_surface = pygame.Surface((20,25))
-# draw onto new surface
-pygame.draw.line(cursor_surface, "lightsteelblue4", (5,5), (10,20), 4)
-pygame.draw.line(cursor_surface, "lightsteelblue4", (10,20), (15,5), 4)
-# set black to be transparent
-cursor_surface.set_colorkey("black")
-# add this to sprite
-cursor = pygame.sprite.Sprite()
-cursor.image = cursor_surface
-
+# init cursor and its animation
+cursor = cursor_init()
 
 # we use the sprite group.draw, not the surface.blit to move the sprite (both works)
 # GroupSingle because if we add a new image (surface), it deletes the old one, meaning we can add custom cursors.
 # so you want to modify the rect to move, and .draw to render
-cursor.rect = (200,200)
-cursor_Manager = pygame.sprite.GroupSingle(cursor)
-cursor_Manager.draw(screen)
-
-# we need some surface for groupsprite.clear to use when erasing the current sprite on screen
-background_for_clear = pygame.Surface((1280,720))
-background_for_clear.fill(background_color)
-
+cursor_manager = CursorManager(screen)
+cursor_manager.add(cursor)
+cursor.set_loc((200,200))
+cursor_manager.draw()
 
 while running:
     # poll for events
@@ -65,14 +73,9 @@ while running:
         elif event.type == pygame.TEXTINPUT:
             print("I PRESSED a key")
             print(cursor.rect)
-            cursor.rect = (cursor.rect[0] + 200,200)
-            cursor_Manager.clear(screen, background_for_clear)
-            cursor_Manager.draw(screen)
-
-    # fill the screen with a color to wipe away anything from last frame
-    # screen.fill("purple")
-
-    # pygame.draw.circle(screen, "red", player_pos, 40,40)
+            cursor.set_loc((cursor.rect[0] + 200,200))
+    
+    cursor_manager.update()
     """ 
     keys = pygame.key.get_pressed()
     if keys[pygame.K_w]:
@@ -85,6 +88,9 @@ while running:
         player_pos.x += 300 * dt
         """
     
+    # draw/render changes below
+    cursor_manager.clear()
+    cursor_manager.draw()
 
     # flip() the display to put your work on screen
     pygame.display.flip()

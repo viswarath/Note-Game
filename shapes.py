@@ -30,7 +30,7 @@ class Stave:
     self.stave_width = int(screen.get_width() - 2 * padding)
     self.bottom_line_y = int(screen.get_height() / 2 + 2 * self.stave_offset)
     
-    self.note_list = [-1] * int(self.stave_width / (self.note_width + self.note_margin))
+    self.note_list = [0] * int(self.stave_width / (self.note_width + self.note_margin))
   
   def get_notes(self):
     return self.note_list
