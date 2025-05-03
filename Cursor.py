@@ -2,12 +2,28 @@ import pygame
 from Animation import Animation
 
 class Cursor(pygame.sprite.Sprite):
-  def __init__(self, list_of_images):
+  def __init__(self, primary_color:pygame.Color):
     super().__init__()
-    
-    self.image = list_of_images[0]
+    # make a sprite for the hovering "v"
+    # need a surface to set the image of the sprite, and a rect
+
+    # base surface for all animations of the cursor
+    cursor_base = pygame.Surface((20,30))
+    cursor_base.set_colorkey("black")
+
+    cursor_0 = cursor_base.copy()
+    # draw onto new surface
+    pygame.draw.line(cursor_0, primary_color, (5,5), (10,20), 4)
+    pygame.draw.line(cursor_0, primary_color, (10,20), (15,5), 4)
+
+    cursor_1= cursor_base.copy()
+
+    pygame.draw.line(cursor_1, primary_color, (5,10), (10,25), 4)
+    pygame.draw.line(cursor_1, primary_color, (10,25), (15,10), 4)
+
+    self.image = cursor_0
     self.rect = self.image.get_rect()
-    self.animation = Animation(list_of_images)
+    self.animation = Animation([cursor_0, cursor_1])
   
   def update(self):
     self.image = self.animation.tick()
