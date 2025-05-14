@@ -60,7 +60,6 @@ class Stave:
     # draw a whole note
     rect.scale_by_ip(.95)
     rect.top = int(rect.top + rect.height * .05)
-    pygame.draw.ellipse(surface, color, rect)
     in_width = rect.width // 3
     in_height = rect.height - int(rect.height * .2)
     in_left = rect.midleft[0] + in_width
@@ -82,5 +81,5 @@ class Stave:
     return
   
   def cursor_to_note(self, cursor:Cursor):
-    cursor.set_loc((self.note_x_val() + 5,200))
+    cursor.set_loc((self.note_x_val() + 5,400))
 
